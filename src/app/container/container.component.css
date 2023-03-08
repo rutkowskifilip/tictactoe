@@ -1,7 +1,18 @@
-div {
+div.score {
+  font-size: 3em;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+div.board {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+}
+
+div.line {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  width: 306px;
-  border: 1px solid black;
+  flex-wrap: nowrap;
 }
