@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { TitleStrategy } from '@angular/router';
 
 @Component({
   selector: 'app-container',
@@ -159,7 +160,7 @@ export class ContainerComponent {
         }
       }
     }
-    // console.log('moves ' + moves);
+    console.log('moves ' + moves);
 
     return moves;
   }
@@ -174,40 +175,15 @@ export class ContainerComponent {
 
   evaluateMove(player: number): Move {
     if (this.isGameOver()) {
-      if (this.getWinningPlayer() === 2) {
-        return { index: [0], score: 10 };
-      } else if (this.getWinningPlayer() === 1) {
-        return { index: [0], score: -10 };
-      } else {
-        return { index: [0], score: 0 };
-      }
+      this.checkWinner;
     }
-
-    const moves: Move[] = [];
-
-    for (const move of this.getAvailableMoves()) {
-      this.board[move[0]][move[1]] = 2;
-      const score = this.evaluateMove(1).score;
-      moves.push({ index: move, score: score });
-      this.board[move[0]][move[1]] = 0;
-    }
-
     let bestMove: Move = { index: [0], score: 0 };
-    let bestScore = -Infinity;
-
-    for (const move of moves) {
-      if (move.score > bestScore) {
-        bestScore = move.score;
-        bestMove = move;
-      }
-    }
 
     return bestMove;
   }
 
   makeMove(player: number): void {
     // console.log(player);
-
     const move = this.evaluateMove(player);
     // console.log(move);
 
@@ -231,8 +207,12 @@ interface Move {
   index: number[];
   score: number;
 }
-
-// Example usage
+interface GameState {
+  board: number[][];
+  isGameOver: () => boolean;
+  getWinningPlayer: () => number;
+  getAvailableMoves: () => number[][];
+}
 
 // Computer makes move
 // Human makes move
