@@ -44,6 +44,87 @@ export class ContainerComponent {
     // console.log(this.xScore, this.oScore);
     this.output.emit([this.xScore, this.oScore]);
   }
+  checkMoveScore(move: number[]): number {
+    let finalScore = 0;
+    let countP = 0;
+    let countC = 0;
+    const startI = move[0] - 4 > 0 ? move[0] - 4 : 0;
+    const startJ = move[1] - 4 > 0 ? move[1] - 4 : 0;
+    const endI = move[0] + 4 < 9 ? move[0] + 4 : 9;
+    const endJ = move[1] + 4 < 9 ? (move[1] = 4) : 9;
+    //wiersze
+    // console.log(startI, startJ, endI, endJ);
+    console.log(move);
+
+    for (let i = startI; i < endI; i++) {
+      for (let j = startJ; j < endJ; j++) {
+        // console.log(this.board[i][j]);
+
+        if (this.board[i][j] === 1) {
+          countP++;
+          finalScore = countP;
+          countC = 0;
+        } else if (this.board[i][j] === 2) {
+          countC++;
+          finalScore = countC;
+          countP = 0;
+        } else {
+          countC = 0;
+          countP = 0;
+        }
+        if (countP === 4 || countC === 4) {
+          return 4;
+        }
+      }
+    }
+
+    //kolumny
+    for (let i = startI; i < endI; i++) {
+      for (let j = startJ; j < endJ; j++) {
+        if (this.board[j][i] === 1) {
+          countP++;
+          countP > finalScore ? (finalScore = countP) : '';
+
+          countC = 0;
+        } else if (this.board[j][i] === 2) {
+          countC++;
+          countC > finalScore ? (finalScore = countC) : '';
+          countP = 0;
+        } else {
+          countC = 0;
+          countP = 0;
+        }
+        if (countP === 4 || countC === 4) {
+          return 4;
+        }
+      }
+    }
+    let j = move[1];
+    for (let i = move[0] + 1; i < endI; i++) {
+      j++;
+      let countP = 0;
+      let countC = 0;
+      if (this.board[i][j] === 1) {
+        countP++;
+        countP > finalScore ? (finalScore = countP) : '';
+
+        countC = 0;
+      } else if (this.board[i][j] === 2) {
+        countC++;
+        countC > finalScore ? (finalScore = countC) : '';
+        countP = 0;
+      } else {
+        countC = 0;
+        countP = 0;
+      }
+      if (countP === 4 || countC === 4) {
+        return 4;
+      }
+    }
+    // finalScore > 0 ? console.log(finalScore, move) : '';
+
+    return finalScore;
+  }
   checkWinner(board: number[][], n: number): boolean {
     // Sprawdź wiersze
 
@@ -147,20 +228,23 @@ export class ContainerComponent {
     }
   }
 
-  getAvailableMoves(): number[][] {
-    console.log('here');
+  getAvailableMoves(): Point[] {
+    // console.log('here');
 
-    const moves: number[][] = [];
+    const moves: Point[] = [];
     for (let i = 0; i < 10; i++) {
       // console.log(i);
 
       for (let j = 0; j < 10; j++) {
+        console.log(i, j);
+
         if (this.board[i][j] === 0) {
-          moves.push([i, j]);
+          console.log('tttt', i, j);
+
+          moves.push({ x: i, y: j });
         }
       }
     }
-    console.log('moves ' + moves);
 
     return moves;
   }
@@ -173,21 +257,33 @@ export class ContainerComponent {
     return this.checkWinner(this.board, 2) ? 2 : 0;
   }
 
-  evaluateMove(player: number): Move {
+  evaluateMove(player: number): number[] {
     if (this.isGameOver()) {
       this.checkWinner;
     }
-    let bestMove: Move = { index: [0], score: 0 };
+    let bestMove = [0, 0];
+    let bestScore = 0;
+    const moves = this.getAvailableMoves();
+    console.log(moves);
 
+    moves.forEach((e) => {
+      // const score = this.checkMoveScore(e);
+      // if (score > bestScore) {
+      //   bestScore = score;
+      //   // bestMove = e;
+      // }
+    });
+    // console.log('+==================');
     return bestMove;
   }
 
   makeMove(player: number): void {
     // console.log(player);
+
     const move = this.evaluateMove(player);
     // console.log(move);
 
-    // this.board[move.index[0]][move.index[1]] = player;
+    this.board[move[0]][move[1]] = player;
   }
 
   ngOnInit(): void {
@@ -200,18 +296,14 @@ export class ContainerComponent {
     }
   }
 }
-// interface Board {
-//   [key: string]: string;
-// }
+
+interface Point {
+  x: number;
+  y: number;
+}
 interface Move {
   index: number[];
   score: number;
-}
-interface GameState {
-  board: number[][];
-  isGameOver: () => boolean;
-  getWinningPlayer: () => number;
-  getAvailableMoves: () => number[][];
 }
 
 // Computer makes move
