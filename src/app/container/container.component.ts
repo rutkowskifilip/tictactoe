@@ -9,12 +9,27 @@ import { FieldComponent } from '../field/field.component';
 })
 export class ContainerComponent {
   @Output() output = new EventEmitter<number[]>();
+  size: number = 10;
   player: string = '';
   x: boolean = true;
   toColor: number[][] = new Array();
   board: number[][] = new Array();
   xScore = 0;
   oScore = 0;
+  changeSize(value: any) {
+    console.log(value.target.value);
+    this.size = value.target.value;
+    this.createBoard();
+  }
+  createBoard() {
+    this.board.splice(0, this.board.length);
+    for (let i = 0; i < this.size; i++) {
+      this.board.push([]);
+      for (let j = 0; j < this.size; j++) {
+        this.board[i].push(0);
+      }
+    }
+  }
   clicked(n: number, i: number, j: number) {
     this.board[i][j] = n;
 
@@ -114,15 +129,15 @@ export class ContainerComponent {
   // ================================================================================
 
   reset(): void {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < this.board.length; i++) {
       this.board[i] = [];
     }
   }
 
   getAvailableMoves(): Field[] {
     const moves: Field[] = [];
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board.length; j++) {
         if (this.board[i][j] === 0) {
           moves.push({ x: i, y: j });
         }
@@ -143,10 +158,11 @@ export class ContainerComponent {
     let finalScore = 0;
     let countP = 0;
     let countC = 0;
-    let startI = move.x > 4 ? move.x - 4 : 0;
-    let startJ = move.y > 4 ? move.y - 4 : 0;
-    let endI = move.x < 5 ? move.x + 4 : 9;
-    let endJ = move.y < 5 ? move.y + 4 : 9;
+    const size = this.board.length;
+    const startI = move.x > 4 ? move.x - 4 : 0;
+    const startJ = move.y > 4 ? move.y - 4 : 0;
+    const endI = move.x < size - 5 ? move.x + 4 : size - 1;
+    const endJ = move.y < size - 5 ? move.y + 4 : size - 1;
     //  wiersze
     for (let i = startJ; i <= endJ; i++) {
       if (this.board[move.x][i] === 1) {
@@ -283,12 +299,7 @@ export class ContainerComponent {
 
   ngOnInit(): void {
     this.player = 'X';
-    for (let i = 0; i < 10; i++) {
-      this.board.push([]);
-      for (let j = 0; j < 10; j++) {
-        this.board[i].push(0);
-      }
-    }
+    this.createBoard();
   }
 }
 

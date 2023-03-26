@@ -1,4 +1,13 @@
 <div class="container">
+  <div class="size">
+    Board size:
+    <select (change)="changeSize($event)">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+    </select>
+  </div>
   <div class="score">{{ xScore }}:{{ oScore }}</div>
   <div class="board">
     <div *ngFor="let x of board; let i = index" class="line">

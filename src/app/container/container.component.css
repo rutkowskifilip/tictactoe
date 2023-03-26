@@ -5,10 +5,22 @@ div.score {
   margin-top: 10px;
   margin-bottom: 30px;
 }
+div.size {
+  font-size: 1.5em;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+select {
+  width: 80px;
+  font-size: 1.3em;
+  text-align: center;
+}
 div.board {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 
 div.line {
