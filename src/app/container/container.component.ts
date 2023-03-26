@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TitleStrategy } from '@angular/router';
+import { FieldComponent } from '../field/field.component';
 
 @Component({
   selector: 'app-container',
@@ -7,13 +8,6 @@ import { TitleStrategy } from '@angular/router';
   styleUrls: ['./container.component.css'],
 })
 export class ContainerComponent {
-  // humanPlayer: number = ;
-  // computerPlayer: number;
-  // constructor(humanPlayer: number, computerPlayer: number) {
-  //   this.humanPlayer = humanPlayer;
-  //   this.computerPlayer = computerPlayer;
-  //   this.reset();
-  // }
   @Output() output = new EventEmitter<number[]>();
   player: string = '';
   x: boolean = true;
@@ -26,14 +20,6 @@ export class ContainerComponent {
 
     this.makeMove(2);
 
-    // if (this.x) {
-    //   this.player = 'O';
-    //   this.x = false;
-    // } else {
-    //   this.player = 'X';
-    //   this.x = true;
-    // }
-
     if (this.checkWinner(this.board, 1)) {
       this.xScore++;
     }
@@ -44,87 +30,7 @@ export class ContainerComponent {
     // console.log(this.xScore, this.oScore);
     this.output.emit([this.xScore, this.oScore]);
   }
-  checkMoveScore(move: number[]): number {
-    let finalScore = 0;
-    let countP = 0;
-    let countC = 0;
-    const startI = move[0] - 4 > 0 ? move[0] - 4 : 0;
-    const startJ = move[1] - 4 > 0 ? move[1] - 4 : 0;
-    const endI = move[0] + 4 < 9 ? move[0] + 4 : 9;
-    const endJ = move[1] + 4 < 9 ? (move[1] = 4) : 9;
-    //wiersze
-    // console.log(startI, startJ, endI, endJ);
-    console.log(move);
 
-    for (let i = startI; i < endI; i++) {
-      for (let j = startJ; j < endJ; j++) {
-        // console.log(this.board[i][j]);
-
-        if (this.board[i][j] === 1) {
-          countP++;
-          finalScore = countP;
-          countC = 0;
-        } else if (this.board[i][j] === 2) {
-          countC++;
-          finalScore = countC;
-          countP = 0;
-        } else {
-          countC = 0;
-          countP = 0;
-        }
-        if (countP === 4 || countC === 4) {
-          return 4;
-        }
-      }
-    }
-
-    //kolumny
-    for (let i = startI; i < endI; i++) {
-      for (let j = startJ; j < endJ; j++) {
-        if (this.board[j][i] === 1) {
-          countP++;
-          countP > finalScore ? (finalScore = countP) : '';
-
-          countC = 0;
-        } else if (this.board[j][i] === 2) {
-          countC++;
-          countC > finalScore ? (finalScore = countC) : '';
-          countP = 0;
-        } else {
-          countC = 0;
-          countP = 0;
-        }
-        if (countP === 4 || countC === 4) {
-          return 4;
-        }
-      }
-    }
-    let j = move[1];
-    for (let i = move[0] + 1; i < endI; i++) {
-      j++;
-      let countP = 0;
-      let countC = 0;
-      if (this.board[i][j] === 1) {
-        countP++;
-        countP > finalScore ? (finalScore = countP) : '';
-
-        countC = 0;
-      } else if (this.board[i][j] === 2) {
-        countC++;
-        countC > finalScore ? (finalScore = countC) : '';
-        countP = 0;
-      } else {
-        countC = 0;
-        countP = 0;
-      }
-      if (countP === 4 || countC === 4) {
-        return 4;
-      }
-    }
-    // finalScore > 0 ? console.log(finalScore, move) : '';
-
-    return finalScore;
-  }
   checkWinner(board: number[][], n: number): boolean {
     // Sprawdź wiersze
 
@@ -207,40 +113,17 @@ export class ContainerComponent {
 
   // ================================================================================
 
-  winningCombinations: number[][] = [
-    [0, 1, 2, 3, 4],
-    [10, 11, 12, 13, 14],
-    [20, 21, 22, 23, 24],
-    [30, 31, 32, 33, 34],
-    [40, 41, 42, 43, 44],
-    [0, 10, 20, 30, 40],
-    [1, 11, 21, 31, 41],
-    [2, 12, 22, 32, 42],
-    [3, 13, 23, 33, 43],
-    [4, 14, 24, 34, 44],
-    [0, 11, 22, 33, 44],
-    [4, 13, 22, 31, 40],
-  ];
-
   reset(): void {
     for (let i = 0; i < 10; i++) {
       this.board[i] = [];
     }
   }
 
-  getAvailableMoves(): Point[] {
-    // console.log('here');
-
-    const moves: Point[] = [];
+  getAvailableMoves(): Field[] {
+    const moves: Field[] = [];
     for (let i = 0; i < 10; i++) {
-      // console.log(i);
-
       for (let j = 0; j < 10; j++) {
-        console.log(i, j);
-
         if (this.board[i][j] === 0) {
-          console.log('tttt', i, j);
-
           moves.push({ x: i, y: j });
         }
       }
@@ -256,24 +139,128 @@ export class ContainerComponent {
   getWinningPlayer(): number {
     return this.checkWinner(this.board, 2) ? 2 : 0;
   }
+  checkMoveScore(move: Field): number {
+    let finalScore = 0;
+    let countP = 0;
+    let countC = 0;
+    let startI = move.x > 4 ? move.x - 4 : 0;
+    let startJ = move.y > 4 ? move.y - 4 : 0;
+    let endI = move.x < 5 ? move.x + 4 : 9;
+    let endJ = move.y < 5 ? move.y + 4 : 9;
+    //  wiersze
+    for (let i = startJ; i <= endJ; i++) {
+      if (this.board[move.x][i] === 1) {
+        countP++;
+        finalScore = countP > finalScore ? countP : finalScore;
+        countC = 0;
+      } else if (this.board[move.x][i] === 2) {
+        countC++;
+        finalScore = countC > finalScore ? countC : finalScore;
+        countP = 0;
+      } else {
+        countC = 0;
+        countP = 0;
+      }
 
-  evaluateMove(player: number): number[] {
-    if (this.isGameOver()) {
-      this.checkWinner;
+      if (countP === 4 || countC === 4) {
+        return 4;
+      }
     }
-    let bestMove = [0, 0];
+
+    //  kolumny
+
+    for (let i = startI; i <= endI; i++) {
+      if (this.board[i][move.y] === 1) {
+        countP++;
+        finalScore = countP > finalScore ? countP : finalScore;
+        countC = 0;
+      } else if (this.board[i][move.y] === 2) {
+        countC++;
+
+        finalScore = countC > finalScore ? countC : finalScore;
+        countP = 0;
+      } else {
+        countC = 0;
+        countP = 0;
+      }
+
+      if (countP === 4 || countC === 4) {
+        return 4;
+      }
+    }
+    let playerStrength = 0;
+    let opponentStrength = 0;
+    const maxIndex = 4;
+    const directions: [number, number][] = [
+      [-1, -1],
+      [-1, 1],
+      [1, -1],
+      [1, 1],
+    ];
+
+    for (let i = 0; i < directions.length; i++) {
+      let playerCount = 0;
+      let opponentCount = 0;
+      const direction = directions[i];
+
+      for (let j = 1; j <= maxIndex; j++) {
+        const newRow = move.x + j * direction[0];
+        const newCol = move.y + j * direction[1];
+
+        if (
+          newRow < 0 ||
+          newRow >= this.board.length ||
+          newCol < 0 ||
+          newCol >= this.board[0].length
+        ) {
+          break; // przekroczenie zakresu planszy, koniec szukania
+        }
+
+        const cell = this.board[newRow][newCol];
+
+        if (cell === 1) {
+          playerCount++;
+
+          // zwiększanie siły pola gracza tylko wtedy, gdy nie została przekroczona maksymalna odległość 5 pól
+          if (playerCount <= maxIndex) {
+            playerStrength += playerCount;
+          }
+        } else if (cell === 2) {
+          opponentCount++;
+
+          // zwiększanie siły pola przeciwnika tylko wtedy, gdy nie została przekroczona maksymalna odległość 5 pól
+          if (opponentCount <= maxIndex) {
+            opponentStrength += opponentCount;
+          }
+        } else {
+          break; // jeśli pole jest puste, przerywamy szukanie w tym kierunku
+        }
+      }
+    }
+
+    const strength =
+      playerStrength > opponentStrength ? playerStrength : opponentStrength;
+
+    finalScore = strength > finalScore ? strength : finalScore;
+    if (move.y === 4 && move.x === 5) {
+    }
+
+    return finalScore;
+  }
+  evaluateMove(player: number): Field {
+    let bestMove: Field = { x: 0, y: 0 };
     let bestScore = 0;
     const moves = this.getAvailableMoves();
-    console.log(moves);
+    console.log('moves', moves);
 
     moves.forEach((e) => {
-      // const score = this.checkMoveScore(e);
-      // if (score > bestScore) {
-      //   bestScore = score;
-      //   // bestMove = e;
-      // }
+      const score = this.checkMoveScore(e);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = e;
+      }
     });
-    // console.log('+==================');
+    console.log('==================');
     return bestMove;
   }
 
@@ -281,9 +268,17 @@ export class ContainerComponent {
     // console.log(player);
 
     const move = this.evaluateMove(player);
+    console.log(move);
+
     // console.log(move);
 
-    this.board[move[0]][move[1]] = player;
+    this.board[move.x][move.y] = player;
+    setTimeout(() => {
+      const moves = this.getAvailableMoves();
+      if (moves.length === 0) {
+        alert(this.xScore > this.oScore ? 'Winner: X' : 'Winner: O');
+      }
+    }, 500);
   }
 
   ngOnInit(): void {
@@ -297,7 +292,7 @@ export class ContainerComponent {
   }
 }
 
-interface Point {
+interface Field {
   x: number;
   y: number;
 }
