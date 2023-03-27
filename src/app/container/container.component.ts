@@ -17,6 +17,8 @@ export class ContainerComponent {
   xScore = 0;
   oScore = 0;
   changeSize(value: any) {
+    this.xScore = 0;
+    this.oScore = 0;
     console.log(value.target.value);
     this.size = value.target.value;
     this.createBoard();
