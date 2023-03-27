@@ -22,6 +22,7 @@ export class ContainerComponent {
     console.log(value.target.value);
     this.size = value.target.value;
     this.createBoard();
+    this.output.emit([this.xScore, this.oScore]);
   }
   createBoard() {
     this.board.splice(0, this.board.length);
